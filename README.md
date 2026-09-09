@@ -2,6 +2,40 @@
 
 En lokal webbapp för en enkel föreningskiosk. Backend körs med Node.js och använder SQLite. Frontend är byggd med Vue 3 och Vite.
 
+## Kom igång – färdig Windows-version
+
+Du behöver inte installera Node.js eller några utvecklingsverktyg för att använda Föreningskiosken. En färdig Windows-installerare finns under [Releases](https://github.com/morgansundsvallmakers/foreningskiosk/releases).
+
+1. Ladda ned `Foreningskiosken-Setup.exe` från den senaste releasen.
+2. Installera programmet på en Windows-dator som ska fungera som kioskens server.
+3. Anslut datorn till en router, via Wi-Fi eller nätverkskabel.
+4. Starta Föreningskiosken. En webbläsare öppnas automatiskt med startsidan.
+5. På startsidan visas en QR-kod för kioskens adress på det lokala nätverket.
+6. Anslut surfplattan som ska användas som kiosk till **samma router/nätverk**.
+7. Skanna QR-koden med surfplattan och öppna länken.
+8. Lägg gärna sidan på surfplattans hemskärm eller använd webbläsaren i helskärm.
+
+Datorn som kör Föreningskiosken behöver vara påslagen medan kiosken används. **Routern behöver inte vara ansluten till internet.** Dess uppgift är att skapa det lokala nätverk där serverdatorn och surfplattan kan kommunicera med varandra. Föreningskiosken kan därför användas även på en plats där internetanslutning saknas.
+
+En enkel fysisk uppsättning kan alltså se ut så här:
+
+```text
+                 Lokalt nätverk
+              ┌─────────────────┐
+              │     Router      │
+              │ internet behövs │
+              │      inte       │
+              └───────┬─────────┘
+                      │
+             ┌────────┴────────┐
+             │                 │
+       Windows-dator       Surfplatta
+      Föreningskiosken     Kioskgränssnitt
+          (server)          (webbläsare)
+             │
+             └── visar QR-kod ──► skannas med surfplattan
+```
+
 ## Funktioner
 
 - kioskflöde för produkter, kundvagn och Swish-betalning
