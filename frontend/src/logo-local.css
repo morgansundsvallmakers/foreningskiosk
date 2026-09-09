@@ -1,0 +1,8 @@
+.kiosk-page::before,
+.review-page::before,
+.branded-page::before {
+  background-image: url('/api/logo');
+  background-repeat: no-repeat;
+  background-position: center top;
+  background-size: contain;
+}

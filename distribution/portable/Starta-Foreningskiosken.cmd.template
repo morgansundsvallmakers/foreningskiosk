@@ -1,0 +1,30 @@
+@echo off
+setlocal
+title Foreningskiosken - serverstatus
+
+set "PORT=0"
+set "HOST="
+set "OPEN_BROWSER=1"
+set "DATABASE_PATH=%LOCALAPPDATA%\Foreningskiosken\data\foreningskiosken.db"
+
+for %%I in ("%DATABASE_PATH%") do if not exist "%%~dpI" mkdir "%%~dpI"
+
+"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -ExecutionPolicy Bypass -File "%~dp0Configure-Firewall.ps1" -Mode Ensure -NodePath "%~dp0runtime\node.exe"
+if errorlevel 1 (
+  echo.
+  echo Windows-behorighet kravs for att konfigurera brandvaggen sakert.
+  echo Starta igen och godkann Windows-fragan. Ingen publik atkomst oppnas.
+  pause >nul
+  exit /b 1
+)
+for /f "delims=" %%H in ('^""%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -ExecutionPolicy Bypass -File "%~dp0Select-BindHost.ps1"^"') do set "HOST=%%H"
+if not defined HOST set "HOST=127.0.0.1"
+
+echo Startar Foreningskiosken...
+echo Lat det har fonstret vara oppet medan kiosken anvands.
+echo.
+"%~dp0runtime\node.exe" "%~dp0app\server\src\server.js"
+
+echo.
+echo Foreningskiosken har stoppats. Tryck pa valfri tangent for att stanga.
+pause >nul

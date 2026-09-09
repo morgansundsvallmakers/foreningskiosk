@@ -1,0 +1,16 @@
+{
+  "name": "foreningskiosken",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": ["frontend", "server"],
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "dist:portable": "powershell -NoProfile -ExecutionPolicy Bypass -File distribution/Build-Portable.ps1",
+    "dist:installer": "powershell -NoProfile -ExecutionPolicy Bypass -File distribution/Build-Installer.ps1",
+    "build": "pnpm --dir frontend build",
+    "start": "pnpm --dir server start",
+    "test": "pnpm --dir server test",
+    "check": "pnpm test && pnpm build"
+  },
+  "engines": { "node": ">=24" }
+}

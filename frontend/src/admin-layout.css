@@ -1,0 +1,103 @@
+.swish-editor-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.swish-done-button {
+  min-width: 100px;
+}
+
+.admin-page-label {
+  margin: 0;
+}
+
+.admin-page-session {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.product-form-heading {
+  grid-column: 1 / -1;
+  margin: 0 0 .1rem;
+}
+
+.product-form:not(.editing) > input::placeholder {
+  color: #8a877f;
+  opacity: 1;
+}
+
+.product-form-visibility {
+  align-self: end;
+}
+
+.product-icon-actions {
+  display: flex;
+  gap: .45rem;
+}
+
+.icon-button {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border: 2px solid #14342b;
+  border-radius: .65rem;
+  background: white;
+}
+
+.icon-button svg {
+  width: 23px;
+  height: 23px;
+  fill: currentColor;
+}
+
+.edit-icon-button {
+  color: #14342b;
+}
+
+.visibility-button.is-active {
+  color: #176b45;
+  border-color: #2f8f61;
+  background: #e1f5e9;
+}
+
+.visibility-button.is-inactive {
+  color: #9d3f36;
+  border-color: #d7a09a;
+  background: #fbe9e7;
+}
+
+.danger-button {
+  min-height: 48px;
+  padding: .7rem 1.3rem;
+  border: 2px solid #b65a50;
+  border-radius: .65rem;
+  color: #8f3028;
+  background: #fbe9e7;
+  font-weight: 750;
+}
+
+@media (max-width: 720px) {
+  .swish-editor-footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .swish-editor-footer > * {
+    width: 100%;
+  }
+
+  .product-form-heading {
+    grid-column: 1;
+  }
+
+  .product-form-visibility {
+    justify-self: start;
+  }
+}

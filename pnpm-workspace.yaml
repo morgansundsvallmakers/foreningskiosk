@@ -1,0 +1,6 @@
+packages:
+  - frontend
+  - server
+nodeLinker: hoisted
+allowBuilds:
+  esbuild: true

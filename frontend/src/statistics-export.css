@@ -1,0 +1,86 @@
+.statistics-export {
+  display: grid;
+  gap: 1rem;
+  margin: 1.5rem 0 2rem;
+  padding: 1.3rem;
+  border-radius: .9rem;
+  background: white;
+}
+
+.statistics-export h2 {
+  margin: 0;
+}
+
+.statistics-export p {
+  margin: 0;
+  color: #625f57;
+}
+
+.statistics-export-controls {
+  display: grid;
+  grid-template-columns: minmax(150px, 1fr) minmax(150px, 1fr);
+  gap: 1rem;
+  align-items: end;
+}
+
+.statistics-export-types {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .8rem 1.6rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.statistics-export-types legend {
+  width: 100%;
+  margin-bottom: .15rem;
+  font-weight: 750;
+}
+
+.statistics-export-types label {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  cursor: pointer;
+}
+
+.statistics-export-types input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  flex: 0 0 auto;
+}
+
+.statistics-export-action {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.statistics-export-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 150px;
+  text-decoration: none;
+}
+
+.statistics-export-error {
+  color: #8a281e !important;
+  font-weight: 700;
+}
+
+@media (max-width: 720px) {
+  .statistics-export-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .statistics-export-types {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .statistics-export-button {
+    width: 100%;
+  }
+}

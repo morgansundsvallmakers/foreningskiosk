@@ -1,0 +1,31 @@
+.pin-settings {
+  display: grid;
+  gap: 1rem;
+  margin: 1rem 0;
+  padding: 1.2rem 1.3rem;
+  border-radius: .9rem;
+  background: white;
+}
+.pin-settings p { margin: .35rem 0 0; color: #625f57; }
+.pin-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 1rem;
+  align-items: end;
+}
+.pin-message { margin: 0; font-weight: 700; }
+.admin-login-page { display: grid; gap: 1.2rem; }
+.admin-login-page .status { display: grid; gap: .35rem; }
+.admin-login {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1rem;
+  align-items: end;
+  padding: 1.3rem;
+  border-radius: .9rem;
+  background: white;
+}
+.admin-login input { letter-spacing: .25em; font-size: 1.15rem; }
+@media (max-width: 720px) {
+  .pin-form, .admin-login { grid-template-columns: 1fr; }
+}
