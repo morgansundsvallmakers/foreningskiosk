@@ -116,6 +116,33 @@ test('äldre databas migreras utan att historik försvinner och kan exporteras',
   }
 })
 
+test('produktbilder läggs till vid migrering och befintliga produkter bevaras', () => {
+  const directory = mkdtempSync(join(tmpdir(), 'foreningskiosken-product-image-migration-'))
+  const filename = join(directory, 'kiosk.db')
+  let db
+  try {
+    db = openDatabase(filename)
+    db.prepare('UPDATE products SET name = ? WHERE id = ?').run('Befintligt kaffe', 1)
+    db.exec('PRAGMA user_version = 2')
+    db.close()
+    db = null
+
+    const legacy = new DatabaseSync(filename)
+    legacy.exec('ALTER TABLE products DROP COLUMN image_type; ALTER TABLE products DROP COLUMN image;')
+    legacy.close()
+
+    db = openDatabase(filename)
+    assert.equal(db.prepare('PRAGMA user_version').get().user_version, DATABASE_SCHEMA_VERSION)
+    const columns = db.prepare('PRAGMA table_info(products)').all().map((column) => column.name)
+    assert.ok(columns.includes('image'))
+    assert.ok(columns.includes('image_type'))
+    assert.equal(db.prepare('SELECT name FROM products WHERE id = 1').get().name, 'Befintligt kaffe')
+  } finally {
+    db?.close()
+    rmSync(directory, { recursive: true, force: true })
+  }
+})
+
 test('nytt schema och exempelprodukter rullas tillbaka atomiskt om uppgraderingen misslyckas', () => {
   const directory = mkdtempSync(join(tmpdir(), 'foreningskiosken-atomic-migration-'))
   const filename = join(directory, 'kiosk.db')
