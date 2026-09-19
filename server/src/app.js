@@ -39,6 +39,8 @@ const LOGIN_MAX_FAILURES = 5
 const LOGIN_BASE_DELAY_MS = 150
 const MAX_PRODUCT_PRICE = 100_000
 const MAX_PRODUCT_SORT_ORDER = 10_000
+const MAX_PRODUCT_IMAGE_SIZE = 5 * 1024 * 1024
+const PRODUCT_IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
 
 function dateKey(value = new Date()) {
   return stockholmDate.format(value)
@@ -51,6 +53,17 @@ function json(response, status, body) {
 
 function unauthorized(response) {
   return json(response, 401, { error: 'Admin-PIN krävs.' })
+}
+
+async function readBinary(request, maxSize) {
+  const chunks = []
+  let size = 0
+  for await (const chunk of request) {
+    size += chunk.length
+    if (size > maxSize) throw new HttpError(413, 'Bilden är för stor. Max 5 MB.')
+    chunks.push(chunk)
+  }
+  return Buffer.concat(chunks)
 }
 
 async function readJson(request) {
@@ -197,7 +210,7 @@ export function createApp({
   logError = console.error,
 }) {
   const order = 'ORDER BY sort_order ASC, name COLLATE NOCASE ASC, id ASC'
-  const selectById = db.prepare('SELECT id, name, price, active, sort_order FROM products WHERE id = ?')
+  const selectById = db.prepare('SELECT id, name, price, active, sort_order, image_type FROM products WHERE id = ?')
   const loginFailures = new Map()
 
   function loginState(request) {
@@ -219,6 +232,7 @@ export function createApp({
   return createServer(async (request, response) => {
     const url = new URL(request.url, 'http://localhost')
     const productMatch = url.pathname.match(/^\/api\/products\/(\d+)$/)
+    const productImageMatch = url.pathname.match(/^\/api\/products\/(\d+)\/image$/)
     const activeMatch = url.pathname.match(/^\/api\/products\/(\d+)\/active$/)
     const recipientMatch = url.pathname.match(/^\/api\/settings\/swish\/recipients\/([^/]+)$/)
     try {
@@ -365,13 +379,39 @@ export function createApp({
         response.writeHead(204)
         return response.end()
       }
+      if (request.method === 'GET' && productImageMatch) {
+        const id = Number(productImageMatch[1])
+        const image = db.prepare('SELECT image, image_type FROM products WHERE id = ?').get(id)
+        if (!image?.image || !image.image_type) return response.writeHead(404).end()
+        response.writeHead(200, { 'Content-Type': image.image_type, 'Cache-Control': 'no-cache' })
+        return response.end(image.image)
+      }
+      if (request.method === 'PUT' && productImageMatch) {
+        if (!isAdminAuthorized(request, db)) return unauthorized(response)
+        const id = Number(productImageMatch[1])
+        if (!selectById.get(id)) return json(response, 404, { error: 'Produkten finns inte.' })
+        const contentType = String(request.headers['content-type'] || '').split(';')[0].trim().toLowerCase()
+        if (!PRODUCT_IMAGE_TYPES.has(contentType)) return json(response, 400, { error: 'Bilden måste vara JPEG, PNG, WEBP eller GIF.' })
+        const image = await readBinary(request, MAX_PRODUCT_IMAGE_SIZE)
+        if (!image.length) return json(response, 400, { error: 'Bildfilen är tom.' })
+        db.prepare('UPDATE products SET image = ?, image_type = ? WHERE id = ?').run(image, contentType, id)
+        return json(response, 200, toProduct(selectById.get(id)))
+      }
+      if (request.method === 'DELETE' && productImageMatch) {
+        if (!isAdminAuthorized(request, db)) return unauthorized(response)
+        const id = Number(productImageMatch[1])
+        const result = db.prepare('UPDATE products SET image = NULL, image_type = NULL WHERE id = ?').run(id)
+        if (result.changes === 0) return json(response, 404, { error: 'Produkten finns inte.' })
+        response.writeHead(204)
+        return response.end()
+      }
       if (request.method === 'GET' && url.pathname === '/api/products') {
-        const rows = db.prepare(`SELECT id, name, price, active, sort_order FROM products WHERE active = 1 ${order}`).all()
+        const rows = db.prepare(`SELECT id, name, price, active, sort_order, image_type FROM products WHERE active = 1 ${order}`).all()
         return json(response, 200, rows.map(toProduct))
       }
       if (request.method === 'GET' && url.pathname === '/api/admin/products') {
         if (!isAdminAuthorized(request, db)) return unauthorized(response)
-        const rows = db.prepare(`SELECT id, name, price, active, sort_order FROM products ${order}`).all()
+        const rows = db.prepare(`SELECT id, name, price, active, sort_order, image_type FROM products ${order}`).all()
         return json(response, 200, rows.map(toProduct))
       }
       if (request.method === 'GET' && url.pathname === '/api/statistics/today') {
