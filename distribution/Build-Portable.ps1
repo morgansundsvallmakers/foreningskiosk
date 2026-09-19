@@ -114,9 +114,9 @@ Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'assets\foreningskiosken.ico') -
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'portable\README.txt') -Destination $outputPath
 Copy-Item -LiteralPath (Join-Path $projectRoot 'LICENSE') -Destination (Join-Path $outputPath 'LICENSE.txt')
 $exampleImagesPath = New-Item -ItemType Directory -Path (Join-Path $outputPath 'Exempelbilder') -Force
-@('exempel-logga.png', 'kaffe.png', 'korv.png', 'läsk.png', 'macka.png') | ForEach-Object {
-  Copy-Item -LiteralPath (Join-Path $projectRoot "docs\images\$_") -Destination $exampleImagesPath
-}
+Get-ChildItem -LiteralPath (Join-Path $projectRoot 'docs\images') -File -Filter '*.png' |
+  Where-Object { $_.Name -ne 'kiosk.png' } |
+  Copy-Item -Destination $exampleImagesPath
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'portable\data\README.txt') -Destination $dataPath
 
 $databaseFiles = Get-ChildItem -LiteralPath $outputPath -Recurse -File | Where-Object { $_.Name -match '\.db(?:-shm|-wal)?$' }
