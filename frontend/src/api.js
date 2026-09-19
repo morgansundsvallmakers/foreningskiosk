@@ -32,6 +32,12 @@ export const productApi = {
   setActive: (id, active) => request(`/api/products/${id}/active`, {
     method: 'PATCH', body: JSON.stringify({ active }),
   }),
+  uploadImage: (id, file) => fileRequest(`/api/products/${id}/image`, {
+    method: 'PUT',
+    headers: { 'Content-Type': file.type || 'application/octet-stream' },
+    body: file,
+  }),
+  removeImage: (id) => request(`/api/products/${id}/image`, { method: 'DELETE' }),
 }
 
 export const settingsApi = {
