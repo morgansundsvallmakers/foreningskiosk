@@ -189,7 +189,7 @@ input { min-height: 46px; width: 100%; padding: .6rem .75rem; border: 1px solid 
 .kiosk-page > *,
 .review-page > *,
 .branded-page > * { position: relative; z-index: 1; }
-.kiosk-page .product-card { background: rgba(255, 255, 255, .9); }
+.kiosk-page .product-card { background-color: rgba(255, 255, 255, .9); }
 .review-page .receipt { background: rgba(255, 255, 255, .92); }
 .branded-page .swish-qr,
 .branded-page .qr-placeholder { position: relative; z-index: 2; }
