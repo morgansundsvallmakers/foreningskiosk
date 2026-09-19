@@ -96,10 +96,14 @@ h2 { margin: 0; }
 .recipient-form h3 { grid-column: 1 / -1; margin: 0; }
 .recipient-form-actions { margin: 0; }
 .product-form {
-  display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 1rem; align-items: end;
+  display: grid; grid-template-columns: minmax(0, 2fr) minmax(180px, 1fr) auto; gap: .85rem 1rem; align-items: end;
   margin-bottom: 2rem; padding: 1.3rem; border-radius: .9rem; background: white;
 }
 .product-form h2 { grid-column: 1 / -1; }
+.product-form-heading { grid-column: 1 / -1; }
+.product-form-visibility { grid-column: 3; grid-row: 2; align-self: end; }
+.product-form.editing .product-image-field { grid-column: 1 / -1; }
+.product-form.editing .form-actions { grid-column: 1 / -1; margin-top: 0; justify-self: end; }
 label { display: grid; gap: .4rem; font-weight: 650; }
 input { min-height: 46px; width: 100%; padding: .6rem .75rem; border: 1px solid #aaa69c; border-radius: .5rem; }
 .checkbox { display: flex; align-items: center; min-height: 46px; }
@@ -204,7 +208,8 @@ input { min-height: 46px; width: 100%; padding: .6rem .75rem; border: 1px solid 
   .recipient-form { grid-template-columns: 1fr; }
   .recipient-form h3 { grid-column: 1; }
   .product-form { grid-template-columns: 1fr; }
-  .product-form h2, .form-actions, .product-image-field { grid-column: 1; }
+  .product-form h2, .product-form-heading, .form-actions, .product-image-field { grid-column: 1; }
+  .product-form-visibility { grid-column: 1; grid-row: auto; justify-self: start; }
   .product-image-field { grid-template-columns: 1fr; }
   .product-image-label { grid-column: 1; }
   .form-actions { justify-self: stretch; }
