@@ -53,7 +53,7 @@ En enkel fysisk uppsättning kan alltså se ut så här:
 
 Produkter kan få egna bilder via administrationen. Bilderna lagras lokalt i Föreningskioskens databas och fungerar utan internet.
 
-Windows-versionen innehåller även några exempelbilder för kaffe, korv, läsk och macka samt en exempellogotyp. De finns i mappen `Exempelbilder` och kan användas för att snabbt prova funktionen.
+Windows-versionen innehåller även några exempelbilder för kaffe, korv, läsk och macka samt en exempellogotyp. Efter installation finns de normalt i `C:\Program Files\Föreningskiosken\Exempelbilder` och kan användas för att snabbt prova funktionen.
 
 ## Krav för utveckling
 
