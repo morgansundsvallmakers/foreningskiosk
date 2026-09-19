@@ -1,5 +1,5 @@
 #define MyAppName "Föreningskiosken"
-#define MyAppVersion "0.1.0"
+#define MyAppVersion "0.2.0"
 #define MyAppPublisher "Morgan Nyberg"
 
 [Setup]
