@@ -2,7 +2,7 @@ import { DatabaseSync } from 'node:sqlite'
 import { mkdirSync } from 'node:fs'
 import { dirname } from 'node:path'
 
-export const DATABASE_SCHEMA_VERSION = 2
+export const DATABASE_SCHEMA_VERSION = 3
 
 const migrations = [
   {
@@ -65,6 +65,13 @@ const migrations = [
     version: 2,
     migrate(db) {
       db.exec('CREATE INDEX IF NOT EXISTS orders_created_at_idx ON orders(created_at)')
+    },
+  },
+  {
+    version: 3,
+    migrate(db) {
+      db.exec('ALTER TABLE products ADD COLUMN image BLOB')
+      db.exec('ALTER TABLE products ADD COLUMN image_type TEXT')
     },
   },
 ]

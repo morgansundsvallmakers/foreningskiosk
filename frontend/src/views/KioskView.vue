@@ -122,7 +122,7 @@ onMounted(async () => {
     <p v-else-if="error" class="status error">{{ error }}</p>
     <p v-else-if="products.length === 0" class="status">Det finns inga aktiva produkter just nu.</p>
     <div class="product-grid">
-      <article v-for="product in products" :key="product.id" class="product-card">
+      <article v-for="product in products" :key="product.id" class="product-card" :class="{ 'has-product-image': product.image_type }" :style="product.image_type ? { '--product-image': `url(/api/products/${product.id}/image)` } : null">
         <div class="product-card-heading">
           <h2>{{ product.name }}</h2>
           <p class="price">{{ product.price }} kr</p>

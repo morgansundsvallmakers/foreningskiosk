@@ -2,6 +2,8 @@
 
 En lokal webbapp för en enkel föreningskiosk. Backend körs med Node.js och använder SQLite. Frontend är byggd med Vue 3 och Vite.
 
+![Föreningskiosken – kioskvy](docs/images/kiosk.png)
+
 ## Kom igång – färdig Windows-version
 
 Du behöver inte installera Node.js eller några utvecklingsverktyg för att använda Föreningskiosken. En färdig Windows-installerare finns under [Releases](https://github.com/morgansundsvallmakers/foreningskiosk/releases).
@@ -41,11 +43,17 @@ En enkel fysisk uppsättning kan alltså se ut så här:
 - kioskflöde för produkter, kundvagn och Swish-betalning
 - flera Swish-mottagare med valbar standardmottagare
 - startsida med länkar, nätverksadress och QR-kod
-- administration av produkter, mottagare och PIN-kod
+- administration av produkter, valfria produktbilder, mottagare och PIN-kod
 - statistik med export
 - lokal SQLite-databas
 - valfri föreningslogotyp som lagras lokalt vid databasen
 - Windows-distribution som portable-paket och installer
+
+## Produktbilder
+
+Produkter kan få egna bilder via administrationen. Bilderna lagras lokalt i Föreningskioskens databas och fungerar utan internet.
+
+Windows-versionen innehåller även några exempelbilder för kaffe, korv, läsk och macka samt en exempellogotyp. De finns i mappen `Exempelbilder` och kan användas för att snabbt prova funktionen.
 
 ## Krav för utveckling
 

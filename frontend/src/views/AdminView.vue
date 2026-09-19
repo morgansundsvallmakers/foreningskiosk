@@ -7,6 +7,9 @@ const loading = ref(true)
 const saving = ref(false)
 const error = ref('')
 const editingId = ref(null)
+const imageFile = ref(null)
+const imagePreview = ref('')
+const removeImageRequested = ref(false)
 const form = reactive({ name: '', price: null, sort_order: 1, active: true })
 
 const authLoading = ref(true)
@@ -144,13 +147,40 @@ function nextSortOrder() {
   return products.value.reduce((highest, product) => Math.max(highest, product.sort_order || 0), 0) + 1
 }
 
+function clearImageSelection() {
+  if (imagePreview.value.startsWith('blob:')) URL.revokeObjectURL(imagePreview.value)
+  imageFile.value = null
+  imagePreview.value = ''
+  removeImageRequested.value = false
+}
+
+function selectImage(event) {
+  const file = event.target.files?.[0]
+  if (!file) return
+  if (imagePreview.value.startsWith('blob:')) URL.revokeObjectURL(imagePreview.value)
+  imageFile.value = file
+  imagePreview.value = URL.createObjectURL(file)
+  removeImageRequested.value = false
+  event.target.value = ''
+}
+
+function requestImageRemoval() {
+  if (imagePreview.value.startsWith('blob:')) URL.revokeObjectURL(imagePreview.value)
+  imageFile.value = null
+  imagePreview.value = ''
+  removeImageRequested.value = true
+}
+
 function clearForm() {
+  clearImageSelection()
   editingId.value = null
   Object.assign(form, { name: '', price: null, sort_order: nextSortOrder(), active: true })
 }
 
 function edit(product) {
+  clearImageSelection()
   editingId.value = product.id
+  imagePreview.value = product.image_type ? `/api/products/${product.id}/image?v=${Date.now()}` : ''
   Object.assign(form, { name: product.name, price: product.price, sort_order: product.sort_order, active: product.active })
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
@@ -159,8 +189,15 @@ async function save() {
   saving.value = true
   error.value = ''
   try {
-    if (editingId.value) await productApi.update(editingId.value, form)
-    else await productApi.create({ ...form, sort_order: nextSortOrder() })
+    if (editingId.value) {
+      const id = editingId.value
+      await productApi.update(id, form)
+      if (removeImageRequested.value) await productApi.removeImage(id)
+      if (imageFile.value) await productApi.uploadImage(id, imageFile.value)
+    } else {
+      const created = await productApi.create({ ...form, sort_order: nextSortOrder() })
+      if (imageFile.value) await productApi.uploadImage(created.id, imageFile.value)
+    }
     clearForm()
     await loadProducts()
   } catch (err) { error.value = err.message }
@@ -273,6 +310,18 @@ onMounted(async () => {
       <input v-else v-model.trim="form.name" aria-label="Namn" placeholder="Namn: ex Läsk" required maxlength="100" />
       <label v-if="editingId">Pris i kronor<input v-model.number="form.price" required type="number" min="0" step="1" /></label>
       <input v-else v-model.number="form.price" aria-label="Pris i kronor" placeholder="Pris: ex 10 kr" required type="number" min="0" step="1" />
+      <div class="product-image-field">
+        <span class="product-image-label">Bild</span>
+        <div class="product-image-controls">
+          <img v-if="imagePreview" class="product-image-preview" :src="imagePreview" alt="Förhandsvisning av produktbild" />
+          <label class="product-image-picker">
+            <span>{{ imagePreview ? 'Byt bild' : 'Välj bild' }}</span>
+            <small>JPEG, PNG, WEBP eller GIF · max 5 MB</small>
+            <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" @change="selectImage" />
+          </label>
+          <button v-if="imagePreview" class="secondary remove-product-image" type="button" @click="requestImageRemoval">Ta bort bild</button>
+        </div>
+      </div>
       <button class="icon-button visibility-button product-form-visibility" :class="form.active ? 'is-active' : 'is-inactive'" type="button" :aria-label="form.active ? 'Produkten visas i kiosken' : 'Produkten är dold i kiosken'" :title="form.active ? 'Visas i kiosken' : 'Dold i kiosken'" @click="form.active = !form.active">
         <svg v-if="form.active" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5c5.3 0 9.3 4.8 10 6.7a.8.8 0 0 1 0 .6C21.3 14.2 17.3 19 12 19S2.7 14.2 2 12.3a.8.8 0 0 1 0-.6C2.7 9.8 6.7 5 12 5Zm0 2c-3.6 0-6.6 2.9-7.9 5 1.3 2.1 4.3 5 7.9 5s6.6-2.9 7.9-5C18.6 9.9 15.6 7 12 7Zm0 2.2A2.8 2.8 0 1 1 12 15a2.8 2.8 0 0 1 0-5.6Z" /></svg>
         <svg v-else viewBox="0 0 24 24" aria-hidden="true"><path d="m3.3 2 18.7 18.7-1.3 1.3-3.2-3.2A11.8 11.8 0 0 1 12 20C6.7 20 2.7 15.2 2 13.3a.8.8 0 0 1 0-.6 13.8 13.8 0 0 1 4.1-5.4L2 3.3 3.3 2Zm4.2 6.7A11.3 11.3 0 0 0 4.1 13c1.3 2.1 4.3 5 7.9 5 1.4 0 2.7-.4 3.8-1L13.7 15a3 3 0 0 1-4.5-4.5L7.5 8.7ZM12 6c5.3 0 9.3 4.8 10 6.7a.8.8 0 0 1 0 .6 13.3 13.3 0 0 1-2.3 3.5l-1.4-1.4A11.3 11.3 0 0 0 19.9 13c-1.3-2.1-4.3-5-7.9-5-.5 0-1 0-1.5.2L8.8 6.5A12 12 0 0 1 12 6Z" /></svg>
@@ -287,6 +336,7 @@ onMounted(async () => {
     <p v-if="loading" class="status">Hämtar produkter…</p>
     <div v-else class="admin-list">
       <article v-for="(product, index) in products" :key="product.id" class="admin-product">
+        <img v-if="product.image_type" class="admin-product-thumbnail" :src="`/api/products/${product.id}/image`" :alt="`${product.name}`" />
         <div class="admin-product-info">
           <div class="product-card-heading"><h2>{{ product.name }}</h2><p class="price">{{ product.price }} kr</p></div>
         </div>
