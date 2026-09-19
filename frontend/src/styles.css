@@ -106,19 +106,19 @@ input { min-height: 46px; width: 100%; padding: .6rem .75rem; border: 1px solid 
 .checkbox input { width: 22px; min-height: 22px; }
 .form-actions { grid-column: 1 / -1; justify-self: end; margin: 0; }
 .product-form:not(.editing) .form-actions { grid-column: auto; justify-self: stretch; }
-.product-image-field { display: grid; gap: .4rem; align-self: stretch; }
-.product-image-label { font-weight: 650; }
+.product-image-field { grid-column: 1 / -1; display: grid; grid-template-columns: auto 1fr; align-items: center; gap: .45rem .8rem; }
+.product-image-label { grid-column: 1 / -1; font-weight: 650; }
 .product-image-controls { display: flex; align-items: center; gap: .65rem; flex-wrap: wrap; }
 .product-image-preview, .admin-product-thumbnail {
-  width: 72px; height: 72px; object-fit: cover; border: 1px solid #d5d1c6; border-radius: .65rem; background: #f3f0e8;
+  width: 58px; height: 58px; object-fit: cover; border: 1px solid #d5d1c6; border-radius: .65rem; background: #f3f0e8;
 }
 .product-image-picker {
-  min-height: 72px; min-width: 160px; padding: .65rem .8rem; place-content: center;
+  display: inline-grid; min-height: 46px; min-width: 125px; padding: .5rem .8rem; place-content: center;
   border: 2px dashed #9ca9a4; border-radius: .65rem; background: #faf9f5; cursor: pointer;
 }
-.product-image-picker small { color: #625f57; font-weight: 500; }
+.product-image-picker small { display: none; }
 .product-image-picker input { position: absolute; width: 1px; height: 1px; min-height: 0; opacity: 0; pointer-events: none; }
-.remove-product-image { min-height: 42px; padding: .45rem .7rem; }
+.remove-product-image { min-height: 46px; padding: .45rem .7rem; }
 .admin-product-thumbnail { flex: none; }
 .admin-list { display: grid; gap: .8rem; }
 .admin-product { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 1rem 1.2rem; border-radius: .8rem; background: white; }
@@ -205,6 +205,8 @@ input { min-height: 46px; width: 100%; padding: .6rem .75rem; border: 1px solid 
   .recipient-form h3 { grid-column: 1; }
   .product-form { grid-template-columns: 1fr; }
   .product-form h2, .form-actions, .product-image-field { grid-column: 1; }
+  .product-image-field { grid-template-columns: 1fr; }
+  .product-image-label { grid-column: 1; }
   .form-actions { justify-self: stretch; }
   .admin-product { align-items: stretch; flex-direction: column; }
   .admin-actions { width: 100%; align-items: stretch; }
