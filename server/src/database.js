@@ -67,6 +67,13 @@ const migrations = [
       db.exec('CREATE INDEX IF NOT EXISTS orders_created_at_idx ON orders(created_at)')
     },
   },
+  {
+    version: 3,
+    migrate(db) {
+      db.exec('ALTER TABLE products ADD COLUMN image BLOB')
+      db.exec('ALTER TABLE products ADD COLUMN image_type TEXT')
+    },
+  },
 ]
 
 function insertExampleProducts(db) {
