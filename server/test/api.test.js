@@ -143,6 +143,59 @@ test('skapar, flyttar och inaktiverar en produkt med adminsession', async () => 
   assert.equal(allProducts.some((product) => product.id === created.id), true)
 })
 
+test('laddar upp, listar, hämtar och tar bort produktbild', async () => {
+  const product = db.prepare("SELECT id FROM products WHERE name = 'Korv'").get()
+  const image = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 1, 2, 3, 4])
+
+  const upload = await fetch(`${baseUrl}/api/products/${product.id}/image`, {
+    method: 'PUT',
+    headers: { Cookie: adminCookie, 'Content-Type': 'image/png' },
+    body: image,
+  })
+  assert.equal(upload.status, 200)
+  assert.equal((await upload.json()).image_type, 'image/png')
+
+  const products = await (await fetch(`${baseUrl}/api/products`)).json()
+  const listed = products.find(({ id }) => id === product.id)
+  assert.equal(listed.image_type, 'image/png')
+  assert.equal(Object.hasOwn(listed, 'image'), false)
+
+  const downloaded = await fetch(`${baseUrl}/api/products/${product.id}/image`)
+  assert.equal(downloaded.status, 200)
+  assert.equal(downloaded.headers.get('content-type'), 'image/png')
+  assert.deepEqual(Buffer.from(await downloaded.arrayBuffer()), image)
+
+  const removed = await fetch(`${baseUrl}/api/products/${product.id}/image`, {
+    method: 'DELETE',
+    headers: { Cookie: adminCookie },
+  })
+  assert.equal(removed.status, 204)
+  assert.equal((await fetch(`${baseUrl}/api/products/${product.id}/image`)).status, 404)
+})
+
+test('skyddar produktbilder mot otillåtna uppladdningar', async () => {
+  const product = db.prepare("SELECT id FROM products WHERE name = 'Korv'").get()
+
+  const unauthorized = await fetch(`${baseUrl}/api/products/${product.id}/image`, {
+    method: 'PUT', headers: { 'Content-Type': 'image/png' }, body: Buffer.from([1]),
+  })
+  assert.equal(unauthorized.status, 401)
+
+  const invalidType = await fetch(`${baseUrl}/api/products/${product.id}/image`, {
+    method: 'PUT',
+    headers: { Cookie: adminCookie, 'Content-Type': 'text/plain' },
+    body: 'inte en bild',
+  })
+  assert.equal(invalidType.status, 400)
+
+  const tooLarge = await fetch(`${baseUrl}/api/products/${product.id}/image`, {
+    method: 'PUT',
+    headers: { Cookie: adminCookie, 'Content-Type': 'image/jpeg' },
+    body: Buffer.alloc(5 * 1024 * 1024 + 1),
+  })
+  assert.equal(tooLarge.status, 413)
+})
+
 test('avvisar produktändring utan adminsession', async () => {
   const response = await fetch(`${baseUrl}/api/products`, {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
