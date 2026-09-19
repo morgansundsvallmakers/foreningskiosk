@@ -2,7 +2,7 @@ import { DatabaseSync } from 'node:sqlite'
 import { mkdirSync } from 'node:fs'
 import { dirname } from 'node:path'
 
-export const DATABASE_SCHEMA_VERSION = 2
+export const DATABASE_SCHEMA_VERSION = 3
 
 const migrations = [
   {
