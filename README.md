@@ -55,6 +55,37 @@ Produkter kan få egna bilder via administrationen. Bilderna lagras lokalt i Fö
 
 Windows-versionen innehåller även några exempelbilder för kaffe, korv, läsk och macka samt en exempellogotyp. Efter installation finns de normalt i `C:\Program Files\Föreningskiosken\Exempelbilder` och kan användas för att snabbt prova funktionen.
 
+## Raspberry Pi – pågående utveckling
+
+Raspberry Pi-spåret utvecklas på grenen `feature/raspberry-pi`. Målet är en fristående kioskbox som kan användas utan extern router eller internetanslutning och som kan administreras från telefon eller surfplatta.
+
+Följande är verifierat på riktig hårdvara:
+
+- Raspberry Pi 3 Model B Plus Rev 1.3
+- Raspberry Pi OS Lite 64-bitars (`aarch64`)
+- Node.js 24 med inbyggt `node:sqlite`
+- Föreningskiosken bygger och alla tester passerar på Pi
+- eget Wi‑Fi-nät med SSID `Foreningskiosken`
+- fast kioskadress `http://192.168.4.1:3000`
+- automatisk start av hotspot och Föreningskiosken efter omstart
+- kioskläge från telefon via Pi:ns eget Wi‑Fi
+- Admin-inloggning från telefon med lokalt lagrad Admin-PIN
+- produktbilder fungerar även på Pi-versionen
+
+Detta är fortfarande ett utvecklingsspår och ingen färdig Raspberry Pi-image publiceras ännu.
+
+Före en första återanvändbar image behöver bland annat följande lösas eller beslutas:
+
+- första installationen när ingen Admin-PIN ännu finns
+- hur startsidan ska fungera på en headless Pi
+- administration av föreningslogotyp från telefon eller surfplatta
+- slutlig plats för beständiga data, bilder och inställningar
+- uppdateringsstrategi utan att föreningens data skrivs över
+- reproducerbar installation av systemd-tjänst och NetworkManager-hotspot
+- genomtestad image på ett tomt SD-kort som om installationen vore helt ny
+
+SSH används under utveckling och felsökning, men ska inte behövas för normal installation eller normal användning av den färdiga Pi-lösningen.
+
 ## Krav för utveckling
 
 - Node.js 24 eller senare
